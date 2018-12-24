@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+}
+@using System.Security.Cryptography.X509Certificates
+@using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata
+@using Microsoft.AspNetCore.Mvc.ViewEngines
+@model WebApplication1.Controllers.FakeDatabase
+
+<div>
+    <p>Current Users</p>
+    
+    @Html.PartialAsync("CurrentUsers", Model.Users).Result
+    
+    
+    @Html.PartialAsync("CreateUser",Model.CurrentUser).Result
+    
+   
+</div>
+
