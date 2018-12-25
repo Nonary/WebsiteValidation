@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Internal;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
@@ -13,9 +15,13 @@ namespace WebApplication1.Controllers
         {
             new User
             {
-                FirstName = "Chase",
-                LastName = "Payne",
-                EmailAddress = "chase_payne@outlook.com"
+                FirstName = "Linda",
+                LastName = "Johnson",
+                EmailAddress = "micaela1997@hotmail.com",
+                Country = "United States",
+                State = "Philadelphia",
+                DateOfBirth = DateTime.Parse("6/26/1976")
+                
             }
         };
 
@@ -30,15 +36,10 @@ namespace WebApplication1.Controllers
         {
             _database = database;
         }
-        //public IActionResult Index()
-        //{
-        //    return View(_database);
-        //}
 
 
-        public IActionResult Index(User model)
+        public IActionResult Index()
         {
-            _database.CurrentUser = model;
             return View(_database);
         }
 
@@ -61,16 +62,6 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ValidateFields(User model)
-        {
-            await Task.Delay(1000);
-            return RedirectToAction("Index", model);
-        }
-
-        public IActionResult CurrentUsers()
-        {
-            return PartialView(_database.Users);
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -84,43 +75,53 @@ namespace WebApplication1.Controllers
         }
 
 
-        public async Task<JsonResult> GetSampleJson()
-        {
-            await Task.Delay(1000);
-            return new JsonResult(new
-            {
-                Successful = new Random().Next() % 2 == 0 ? "OK" : "Nope",
-                StatusCode = "Didn't work"
-            });
-        }
-
         [HttpPost]
         public IActionResult SubmitUser(User model)
         {
-            _database.Users.Add(model);
+            if (ModelState.IsValid) _database.Users.Add(model);
+
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public JsonResult GetStates(Country country)
+        [AcceptVerbs("POST","GET")]
+        public async Task<JsonResult> ValidateEmailAddress(string emailAddress)
         {
-            if (country.Name == "Canada")
+            //Simulating server response time
+            await Task.Delay(1000);
+
+            if (_database.Users.Any(x => x.EmailAddress == emailAddress))
+            {
+                return Json("That e-mail address is already in use, please provide a different one.");
+            }
+            else
+            {
+                return Json(true);
+            }
+
+        }
+
+        [HttpPost]
+        public JsonResult GetStates(string country)
+        {
+            if (country == "Canada")
                 return CanadaStates();
-            return UnitedStates();
+            if (country == "United States") return UnitedStates();
+
+            return null;
         }
 
         private JsonResult UnitedStates()
         {
             return new JsonResult(new[]
             {
-                "Alabama", " Alaska", " Arizona", " Arkansas", " California", " Colorado", " Connecticut",
-                " Delaware", " Florida", " Georgia", " Hawaii", " Idaho", " Illinois", " Indiana", " Iowa",
-                " Kansas", " Kentucky", " Louisiana", " Maine", " Maryland", " Massachusetts", " Michigan",
-                " Minnesota", " Mississippi", " Missouri", " Montana", " Nebraska", " Nevada", " New Hampshire",
-                " New Jersey", " New Mexico", " New York", " North Carolina", "  North Dakota", " Ohio",
-                " Oklahoma", " Oregon", " Pennsylvania", " Rhode Island", " South Carolina", " South Dakota",
-                " Tennessee", " Texas", " Utah", " Vermont", " Virginia", " Washington", " West Virginia",
-                " Wisconsin", " Wyoming"
+                "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+                "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+                "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+                "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "NewHampshire",
+                "NewJersey", "NewMexico", "NewYork", "NorthCarolina", "NorthDakota", "Ohio",
+                "Oklahoma", "Oregon", "Pennsylvania", "RhodeIsland", "SouthCarolina", "SouthDakota",
+                "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "WestVirginia",
+                "Wisconsin", "Wyoming"
             });
         }
 
@@ -128,10 +129,9 @@ namespace WebApplication1.Controllers
         {
             return new JsonResult(new[]
             {
-                "Quebec", " Nova Scotia", " New Brunswick", " Manitoba", " British Columbia",
-                " Prince Edward Island", " Saskatchewan", " Alberta", " Newfoundland and Labrador"
+                "Quebec", "Nova Scotia", "New Brunswick", "Manitoba", "British Columbia",
+                "Prince Edward Island", "Saskatchewan", "Alberta", "Newfoundland and Labrador"
             });
-
         }
     }
 }

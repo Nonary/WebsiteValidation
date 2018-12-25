@@ -16,7 +16,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.DateOfBirth)
             </th>
-            <th></th>
+            <th>
+                @Html.DisplayNameFor(x => x.Country)
+            </th>
+            <th>
+                @Html.DisplayNameFor(x => x.State)
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -35,7 +40,12 @@
             <td>
                 @Html.DisplayFor(modelItem => item.DateOfBirth)
             </td>
-          
+            <td>
+                @Html.DisplayFor(modelItem => item.Country)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
         </tr>
 }
     </tbody>

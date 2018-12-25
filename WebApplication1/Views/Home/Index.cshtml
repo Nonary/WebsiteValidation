@@ -8,12 +8,12 @@
 @model WebApplication1.Controllers.FakeDatabase
 
 <div>
-    <p>Current Users</p>
+
+    <p>Try entering the same e-mail address as Linda to test Real-Time Server Validation.</p>
+    @await Html.PartialAsync("CurrentUsers", Model.Users)
     
-    @Html.PartialAsync("CurrentUsers", Model.Users).Result
     
-    
-    @Html.PartialAsync("CreateUser",Model.CurrentUser).Result
+    @await Html.PartialAsync("CreateUser",Model.CurrentUser)
     
    
 </div>
