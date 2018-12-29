@@ -4,6 +4,7 @@
 
 @using (Html.BeginForm())
 {
+    <p id="selected">Select a User</p>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
         <label asp-for="FirstName" class="col-form-label"></label>
@@ -48,28 +49,34 @@
 }
 
 
-    <script type="text/javascript" language="javascript">
-
-        //Prevent validation from happening on key press.
-        //This cannot be in document ready function, so this is a self invoking anonymous method.
-        (function() {
-            $.validator.setDefaults({ onkeyup: false });
 
 
-        })();
+<script type="text/javascript" language="javascript">
+
+    //Prevent validation from happening on key press.
+    //This cannot be in document ready function, so this is a self invoking anonymous method.
+    (function() {
+        $.validator.setDefaults({ onkeyup: false });
 
 
-        $(document).ready(function() {
 
-            //MVC doesn't support datetime ranges as part of validation
-            //So this adds custom validation on the client side.
-            $('#DateOfBirth').rules("add",
-                {
-                    messages: {
-                        min: "Please enter a date within the last 100 years.",
-                        max: "You cannot enter in a date from the future.",
-                        required: "Please enter in your birth date."
-                    }});
+
+    })();
+
+
+    $(document).ready(function () {
+
+
+
+        //MVC doesn't support datetime ranges as part of validation
+        //So this adds custom validation on the client side.
+        $('#DateOfBirth').rules("add",
+            {
+                messages: {
+                    min: "Please enter a date within the last 100 years.",
+                    max: "You cannot enter in a date from the future.",
+                    required: "Please enter in your birth date."
+                }});
 
 
 // It is currently not possible to do a passive event in JQuery, so utilizing plain javascript.
@@ -78,6 +85,8 @@
                 var selectedCountry = (eventArgs.currentTarget.value);
 
                 $('#State').empty();
+
+
 
                 $.ajax({
                     url: '@(Url.Action("GetStates"))',
@@ -95,8 +104,21 @@
                             });
                     }
                 });
-            }, {passive:true});
+            }, { passive: true });
 
+
+        $('input[type=checkbox]').change(function (event) {
+
+            $('input[type=checkbox]').each(function(i, v) {
+                $(v).prop('checked', false);
+            });
+
+            $(event.currentTarget).prop('checked', true);
+
+            $(event.currentTarget).closest('tr').each(function(i, v) {
+                console.log(v.text);
+            });
+        });
     });
 
-    </script>
+</script>
